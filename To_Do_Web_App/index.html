@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCT WD 04 - To-Do Web App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <p class="eyebrow">SCT_WD_04</p>
+      <h1>To-Do Web App</h1>
+      <p>Add, organize, complete, edit, and schedule tasks.</p>
+    </header>
+
+    <form id="taskForm">
+      <input id="taskTitle" type="text" placeholder="Task name" required>
+      <select id="taskList" aria-label="Task list">
+        <option>Personal</option>
+        <option>Study</option>
+        <option>Work</option>
+        <option>Important</option>
+      </select>
+      <input id="taskDate" type="datetime-local" aria-label="Date and time">
+      <button id="submitBtn" type="submit">Add Task</button>
+    </form>
+
+    <section class="layout">
+      <aside>
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="active">Active</button>
+        <button class="filter" data-filter="completed">Completed</button>
+      </aside>
+      <section class="tasks">
+        <div class="heading">
+          <h2 id="heading">All Tasks</h2>
+          <span id="summary">0 tasks</span>
+        </div>
+        <ul id="taskListView"></ul>
+        <p id="empty" class="empty">No tasks available.</p>
+      </section>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

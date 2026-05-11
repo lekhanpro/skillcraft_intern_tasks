@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCT WD 02 - Stopwatch</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="watch">
+    <section class="panel">
+      <p class="eyebrow">SCT_WD_02</p>
+      <h1>Stopwatch Web Application</h1>
+      <div class="time" id="time">00:00:00.000</div>
+      <div class="controls">
+        <button id="start" class="start">Start</button>
+        <button id="pause" class="pause" disabled>Pause</button>
+        <button id="reset" class="reset" disabled>Reset</button>
+        <button id="lap" class="lap" disabled>Lap</button>
+      </div>
+    </section>
+    <section class="laps-panel">
+      <h2>Lap Records</h2>
+      <ol id="laps"></ol>
+      <p id="empty" class="empty">No lap recorded.</p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

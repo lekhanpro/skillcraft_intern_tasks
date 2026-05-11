@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCT WD 03 - Tic Tac Toe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game">
+    <header>
+      <div>
+        <p class="eyebrow">SCT_WD_03</p>
+        <h1>Tic Tac Toe</h1>
+        <p id="status">Player X turn</p>
+      </div>
+      <select id="mode" aria-label="Game mode">
+        <option value="computer">Play vs Computer</option>
+        <option value="human">Two Players</option>
+      </select>
+    </header>
+    <section class="board" id="board" aria-label="Game board"></section>
+    <footer>
+      <span id="score">X: 0 | O: 0 | Draws: 0</span>
+      <button id="newGame">New Game</button>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

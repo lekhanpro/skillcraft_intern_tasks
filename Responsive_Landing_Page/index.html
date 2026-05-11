@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCT WD 01 - Responsive Landing Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <a class="logo" href="#home">SCT_WD_01</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="#home">Home</a>
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="home">
+    <div>
+      <p class="tag">Responsive Landing Page</p>
+      <h1>Interactive navigation that reacts while you browse.</h1>
+      <p class="hero-copy">The fixed menu changes after scrolling, highlights links on hover, and adapts cleanly on mobile screens.</p>
+      <a class="btn" href="#services">View Sections</a>
+    </div>
+  </header>
+
+  <main>
+    <section id="services">
+      <p class="tag">Services</p>
+      <h2>Built for smooth navigation</h2>
+      <div class="grid">
+        <article><h3>Fixed Header</h3><p>The menu remains visible across every page section.</p></article>
+        <article><h3>Hover Effects</h3><p>Navigation links give clear visual feedback.</p></article>
+        <article><h3>Scroll State</h3><p>The header changes style when the page scrolls.</p></article>
+      </div>
+    </section>
+    <section class="dark" id="work">
+      <p class="tag">Work</p>
+      <h2>Responsive sections for all screen sizes</h2>
+      <p>Desktop users get spacious multi-column layouts, while mobile users get simple stacked content.</p>
+    </section>
+    <section id="contact">
+      <p class="tag">Contact</p>
+      <h2>Ready to use</h2>
+      <p>This page is pure HTML, CSS, and JavaScript.</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
