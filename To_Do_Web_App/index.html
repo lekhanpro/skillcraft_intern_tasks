@@ -3,45 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SCT WD 04 - To-Do Web App</title>
+  <title>Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="app">
-    <header>
-      <p class="eyebrow">SCT_WD_04</p>
-      <h1>To-Do Web App</h1>
-      <p>Add, organize, complete, edit, and schedule tasks.</p>
-    </header>
+  <!-- NAV -->
+  <nav class="nav">
+    <a class="nav__brand" href="#">Tasks</a>
+    <div class="nav__icons">
+      <button class="icon-btn" aria-label="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+    </div>
+  </nav>
 
-    <form id="taskForm">
-      <input id="taskTitle" type="text" placeholder="Task name" required>
-      <select id="taskList" aria-label="Task list">
-        <option>Personal</option>
-        <option>Study</option>
-        <option>Work</option>
-        <option>Important</option>
-      </select>
-      <input id="taskDate" type="datetime-local" aria-label="Date and time">
-      <button id="submitBtn" type="submit">Add Task</button>
-    </form>
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Greeting -->
+    <div class="greeting">
+      <h1 id="greetingText">Good Morning</h1>
+      <p id="greetingSub">You have <span id="taskCountText">0 tasks</span> to complete today.</p>
+    </div>
 
-    <section class="layout">
-      <aside>
-        <button class="filter active" data-filter="all">All</button>
-        <button class="filter" data-filter="active">Active</button>
-        <button class="filter" data-filter="completed">Completed</button>
-      </aside>
-      <section class="tasks">
-        <div class="heading">
-          <h2 id="heading">All Tasks</h2>
-          <span id="summary">0 tasks</span>
-        </div>
-        <ul id="taskListView"></ul>
-        <p id="empty" class="empty">No tasks available.</p>
-      </section>
-    </section>
+    <!-- Add task form -->
+    <div class="add-card">
+      <form id="taskForm" class="add-form">
+        <input id="taskTitle" type="text" class="add-input" placeholder="What needs to be done?" autocomplete="off">
+        <button type="submit" class="add-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Task
+        </button>
+      </form>
+    </div>
+
+    <!-- Task list -->
+    <div class="task-list" id="taskList"></div>
+
+    <!-- Completed divider + list -->
+    <div id="completedSection" hidden>
+      <div class="divider-label">COMPLETED</div>
+      <div class="task-list" id="completedList"></div>
+    </div>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>

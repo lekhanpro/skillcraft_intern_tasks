@@ -1,89 +1,239 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --purple: #6c3de8;
+  --purple-dark: #4f28c4;
+  --purple-light: #ede9ff;
+  --teal: #0d9488;
+  --text: #1a1a2e;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --bg: #eef0f8;
+  --white: #ffffff;
+  --card-bg: #f4f5fb;
+}
+
 body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
-  margin: 0;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  font-family: Inter, Arial, Helvetica, sans-serif;
-  color: #fff;
-  background:
-    linear-gradient(rgba(143, 154, 239, 0.72), rgba(143, 154, 239, 0.72)),
-    url("../1486020891cfaadebcff76a0f44445de.jpg") center/cover fixed;
 }
-.game {
-  width: min(620px, 100%);
-  padding: clamp(18px, 4vw, 30px);
-  border: 1px solid rgba(255, 255, 255, 0.20);
-  border-radius: 28px;
-  background: rgba(42, 43, 95, 0.92);
-  box-shadow: 0 26px 60px rgba(32, 31, 84, 0.34);
-}
-header,
-footer {
+
+/* NAV */
+.nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  padding: 0 32px;
+  height: 60px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
 }
-.eyebrow {
-  margin: 0 0 6px;
-  color: #c8fbff;
-  font-weight: 900;
-}
-h1 {
-  margin: 0;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(2rem, 8vw, 4rem);
-}
-#status {
-  margin: 8px 0 0;
-  color: #dbe2ff;
+
+.nav__brand {
   font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--purple);
+  letter-spacing: -0.02em;
 }
-select,
-button {
-  min-height: 44px;
+
+/* MAIN */
+.main {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* MODE TOGGLE */
+.mode-toggle {
+  display: flex;
+  background: var(--white);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  padding: 0 12px;
-  font-weight: 900;
+  padding: 4px;
+  gap: 4px;
 }
+
+.mode-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.mode-btn--active {
+  background: var(--purple);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(108, 61, 232, 0.3);
+}
+
+/* SCORE CARD */
+.score-card {
+  width: 100%;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 20px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 2px 16px rgba(108, 61, 232, 0.08);
+}
+
+.player-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: var(--card-bg);
+  transition: background 0.2s;
+}
+
+.player-col--x.active { background: var(--purple-light); }
+.player-col--o.active { background: #ccfbf1; }
+
+.player-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.player-symbol {
+  font-size: 1.8rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.x-symbol { color: var(--purple); }
+.o-symbol { color: var(--teal); }
+
+.player-score {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.vs-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.vs-text {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.turn-indicator {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.turn-mark { font-weight: 800; }
+.x-mark { color: var(--purple); }
+.o-mark { color: var(--teal); }
+
+/* BOARD */
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  aspect-ratio: 1;
-  margin: 26px 0;
+  width: 100%;
+  max-width: 340px;
 }
+
 .cell {
-  border: 0;
-  border-radius: 18px;
-  background: #3f4396;
-  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.12);
-  font-size: clamp(3rem, 17vw, 6rem);
+  aspect-ratio: 1;
+  background: var(--white);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 2.2rem;
   font-weight: 900;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  color: transparent;
 }
-.cell:hover:not(:disabled) { background: #5054ad; }
+
+.cell:hover:not(:disabled):not(.taken) {
+  background: var(--purple-light);
+  transform: scale(1.04);
+}
+
+.cell.x   { color: var(--purple); }
+.cell.o   { color: var(--teal); }
+
+.cell.win {
+  background: var(--purple-light);
+  box-shadow: 0 0 0 2px var(--purple);
+}
+
+.cell.win.o {
+  background: #ccfbf1;
+  box-shadow: 0 0 0 2px var(--teal);
+}
+
 .cell:disabled { cursor: default; }
-.x { color: #9df6ff; }
-.o { color: #ffb5e8; }
-.win { background: #595ec2; }
-#newGame {
-  color: #2a2b5f;
-  background: #ffb5e8;
-  border-color: #ffb5e8;
+.cell.taken    { cursor: default; }
+
+/* RESTART */
+.restart-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 13px 30px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 6px 20px rgba(108, 61, 232, 0.35);
+  transition: all 0.2s;
 }
-@media (max-width: 560px) {
-  header,
-  footer {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  select,
-  #newGame { width: 100%; }
+
+.restart-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(108, 61, 232, 0.45);
+}
+
+.win-message {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--purple);
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .nav { padding: 0 16px; }
+  .main { padding: 24px 16px 48px; gap: 18px; }
+  .board { max-width: 100%; gap: 8px; }
+  .cell { border-radius: 10px; font-size: 1.8rem; }
+  .mode-btn { padding: 7px 14px; font-size: 0.8rem; }
 }

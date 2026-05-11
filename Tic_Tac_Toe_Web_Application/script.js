@@ -1,86 +1,149 @@
-const boardEl = document.getElementById("board");
-const statusEl = document.getElementById("status");
-const modeEl = document.getElementById("mode");
-const scoreEl = document.getElementById("score");
-const newGameBtn = document.getElementById("newGame");
+const boardEl       = document.getElementById('board');
+const turnIndicator = document.getElementById('turnIndicator');
+const scoreXEl      = document.getElementById('scoreX');
+const scoreOEl      = document.getElementById('scoreO');
+const newGameBtn    = document.getElementById('newGame');
+const p1col         = document.getElementById('p1col');
+const p2col         = document.getElementById('p2col');
+const p2label       = document.getElementById('p2label');
+const modeBtns      = document.querySelectorAll('.mode-btn');
 
-const lines = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
-  [0, 4, 8], [2, 4, 6]
+const LINES = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
 ];
 
-let board = Array(9).fill("");
-let current = "X";
+let board    = Array(9).fill('');
+let current  = 'X';
 let finished = false;
-let score = { X: 0, O: 0, D: 0 };
+let mode     = 'computer'; // 'computer' | 'human'
+let score    = { X: 0, O: 0 };
 
-function getResult(state) {
-  for (const line of lines) {
-    const [a, b, c] = line;
-    if (state[a] && state[a] === state[b] && state[a] === state[c]) return { mark: state[a], line };
-  }
-  return state.every(Boolean) ? { mark: "D", line: [] } : null;
-}
-
-function render() {
-  const result = getResult(board);
-  boardEl.innerHTML = "";
-  board.forEach((mark, index) => {
-    const cell = document.createElement("button");
-    cell.className = `cell ${mark.toLowerCase()}`;
-    if (result && result.line.includes(index)) cell.classList.add("win");
-    cell.textContent = mark;
-    cell.disabled = finished || Boolean(mark);
-    cell.addEventListener("click", () => play(index));
-    boardEl.appendChild(cell);
+// ── Mode toggle ──
+modeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    mode = btn.dataset.mode;
+    modeBtns.forEach(b => b.classList.toggle('mode-btn--active', b === btn));
+    p2label.textContent = mode === 'computer' ? 'COMPUTER' : 'PLAYER 2';
+    reset();
   });
-  scoreEl.textContent = `X: ${score.X} | O: ${score.O} | Draws: ${score.D}`;
+});
+
+// ── Win detection ──
+function getResult(state) {
+  for (const line of LINES) {
+    const [a, b, c] = line;
+    if (state[a] && state[a] === state[b] && state[a] === state[c]) {
+      return { mark: state[a], line };
+    }
+  }
+  return state.every(Boolean) ? { mark: 'D', line: [] } : null;
 }
 
-function play(index) {
-  if (finished || board[index]) return;
-  board[index] = current;
-  const result = getResult(board);
+// ── Minimax AI ──
+function minimax(state, isMax) {
+  const result = getResult(state);
   if (result) {
-    finished = true;
-    score[result.mark] += 1;
-    statusEl.textContent = result.mark === "D" ? "Game draw" : `Player ${result.mark} wins`;
-    render();
-    return;
+    if (result.mark === 'O') return 10;
+    if (result.mark === 'X') return -10;
+    return 0;
   }
-  current = current === "X" ? "O" : "X";
-  statusEl.textContent = `Player ${current} turn`;
-  render();
-  if (modeEl.value === "computer" && current === "O") setTimeout(computerPlay, 250);
+  const scores = [];
+  state.forEach((cell, i) => {
+    if (!cell) {
+      const copy = [...state];
+      copy[i] = isMax ? 'O' : 'X';
+      scores.push(minimax(copy, !isMax));
+    }
+  });
+  return isMax ? Math.max(...scores) : Math.min(...scores);
 }
 
 function bestMove() {
-  const open = board.map((mark, index) => mark ? null : index).filter(index => index !== null);
-  for (const mark of ["O", "X"]) {
-    for (const index of open) {
+  let best = -Infinity, move = -1;
+  board.forEach((cell, i) => {
+    if (!cell) {
       const copy = [...board];
-      copy[index] = mark;
-      const result = getResult(copy);
-      if (result && result.mark === mark) return index;
+      copy[i] = 'O';
+      const score = minimax(copy, false);
+      if (score > best) { best = score; move = i; }
     }
+  });
+  return move;
+}
+
+// ── Turn UI ──
+function updateTurnUI() {
+  const cls    = current === 'X' ? 'x-mark' : 'o-mark';
+  const symbol = current === 'X' ? '✕' : '○';
+  turnIndicator.innerHTML = `It's <span class="turn-mark ${cls}">${symbol}</span> turn`;
+  p1col.classList.toggle('active', current === 'X');
+  p2col.classList.toggle('active', current === 'O');
+}
+
+// ── Render board ──
+function render() {
+  const result = getResult(board);
+  boardEl.innerHTML = '';
+
+  board.forEach((mark, i) => {
+    const cell = document.createElement('button');
+    cell.className = 'cell';
+    if (mark) {
+      cell.classList.add(mark.toLowerCase(), 'taken');
+      cell.textContent = mark === 'X' ? '✕' : '○';
+    }
+    if (result && result.line.includes(i)) cell.classList.add('win');
+    cell.disabled = finished || Boolean(mark);
+    cell.addEventListener('click', () => play(i));
+    boardEl.appendChild(cell);
+  });
+
+  scoreXEl.textContent = score.X;
+  scoreOEl.textContent = score.O;
+}
+
+// ── Play a move ──
+function play(index) {
+  if (finished || board[index]) return;
+  board[index] = current;
+
+  const result = getResult(board);
+  if (result) {
+    finished = true;
+    if (result.mark !== 'D') score[result.mark]++;
+    const who = result.mark === 'X'
+      ? 'Player 1 wins!'
+      : (mode === 'computer' ? 'Computer wins!' : 'Player 2 wins!');
+    turnIndicator.innerHTML = `<span class="win-message">${result.mark === 'D' ? "It's a draw!" : who}</span>`;
+    p1col.classList.remove('active');
+    p2col.classList.remove('active');
+    render();
+    return;
   }
-  if (open.includes(4)) return 4;
-  return open.find(index => [0, 2, 6, 8].includes(index)) ?? open[0];
+
+  current = current === 'X' ? 'O' : 'X';
+  updateTurnUI();
+  render();
+
+  // Computer plays O
+  if (!finished && mode === 'computer' && current === 'O') {
+    boardEl.querySelectorAll('.cell').forEach(c => c.disabled = true);
+    setTimeout(() => {
+      play(bestMove());
+    }, 350);
+  }
 }
 
-function computerPlay() {
-  if (!finished) play(bestMove());
-}
-
+// ── Reset ──
 function reset() {
-  board = Array(9).fill("");
-  current = "X";
+  board    = Array(9).fill('');
+  current  = 'X';
   finished = false;
-  statusEl.textContent = "Player X turn";
+  updateTurnUI();
   render();
 }
 
-newGameBtn.addEventListener("click", reset);
-modeEl.addEventListener("change", reset);
-render();
+newGameBtn.addEventListener('click', reset);
+reset();

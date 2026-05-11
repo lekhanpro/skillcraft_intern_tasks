@@ -3,28 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SCT WD 02 - Stopwatch</title>
+  <title>Stopwatch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="watch">
-    <section class="panel">
-      <p class="eyebrow">SCT_WD_02</p>
-      <h1>Stopwatch Web Application</h1>
-      <div class="time" id="time">00:00:00.000</div>
-      <div class="controls">
-        <button id="start" class="start">Start</button>
-        <button id="pause" class="pause" disabled>Pause</button>
-        <button id="reset" class="reset" disabled>Reset</button>
-        <button id="lap" class="lap" disabled>Lap</button>
+  <main class="main">
+    <!-- Time display -->
+    <div class="time-card">
+      <div class="time-display">
+        <span class="time-main">00:00:00</span><span class="time-ms">.00</span>
       </div>
-    </section>
-    <section class="laps-panel">
-      <h2>Lap Records</h2>
-      <ol id="laps"></ol>
-      <p id="empty" class="empty">No lap recorded.</p>
+      <p class="time-label">CURRENT TIME</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="ctrl-btn ctrl-btn--ghost" id="lap" disabled aria-label="Lap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      </button>
+      <button class="ctrl-btn ctrl-btn--primary" id="start">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Start
+      </button>
+      <button class="ctrl-btn ctrl-btn--ghost" id="reset" disabled aria-label="Reset">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      </button>
+    </div>
+
+    <!-- Lap history -->
+    <section class="laps-section">
+      <div class="laps-header">
+        <div class="laps-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Lap History
+        </div>
+        <span class="laps-badge" id="lapCount" hidden>0 Laps</span>
+      </div>
+      <div class="laps-list" id="laps"></div>
+      <p class="laps-empty" id="empty">No laps recorded yet.</p>
     </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>
