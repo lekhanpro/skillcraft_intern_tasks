@@ -1,68 +1,140 @@
-# SkillCraft Intern Tasks
+# SkillCraft Technology — Web Development Internship
 
-Responsive HTML, CSS, and JavaScript implementations completed for the SkillCraft Technology internship tasks.
+A collection of four production-quality web applications built as part of the **SkillCraft Technology** internship program. Each project is implemented with vanilla HTML, CSS, and JavaScript — no frameworks, no dependencies.
 
-## Project Structure
+---
 
-```text
-README.md
-1486020891cfaadebcff76a0f44445de.jpg
-63301ae764369e187405fe318f265605.jpg
-6acf64c9c932457e1f4a7e3cd0307cee.jpg
-9a306482b44b2988f17caa2c64b9f47b.jpg
+## Projects
 
-Responsive_Landing_Page/
-  index.html
-  style.css
-  script.js
+### 01 · Responsive Landing Page
 
-Stopwatch_Web_Application/
-  index.html
-  style.css
-  script.js
+A fully responsive personal portfolio landing page based on [lekhanhr.online](https://www.lekhanhr.online/).
 
-Tic_Tac_Toe_Web_Application/
-  index.html
-  style.css
-  script.js
+**Features**
+- Sticky navigation with scroll-aware styling and mobile hamburger menu
+- Full-screen hero section with animated floating cards
+- Auto-scrolling marquee ticker
+- About section with stats (10+ apps, 42+ repos, GSoC aspirant, IEEE published)
+- 4-column skills grid (Frontend, Backend, AI & Data, Tools & DevOps)
+- Featured projects section with real project data (Chess Post Game Analyst, AARS, Nova Agent, PhantomTrace, and more)
+- Vertical experience timeline from Apr 2024 → Feb 2026
+- Contact form with simulated submission
+- Scroll-reveal animations on cards and timeline items
+- Fully responsive down to 320px
 
-To_Do_Web_App/
-  index.html
-  style.css
-  script.js
+---
+
+### 02 · Stopwatch Web Application
+
+A clean, centered stopwatch with lap tracking.
+
+**Features**
+- Start / Pause / Resume / Reset controls
+- Lap recording with per-lap split time and delta from previous lap
+- Lap counter badge
+- Fully centered layout — no distractions, no navigation
+- Responsive on all screen sizes
+
+---
+
+### 03 · Tic Tac Toe Web Application
+
+An interactive Tic Tac Toe game with two play modes.
+
+**Features**
+- **vs Computer** — unbeatable AI powered by the Minimax algorithm
+- **2 Players** — local two-player mode on the same device
+- Mode toggle pill that resets the board on switch
+- Score tracking across rounds (Player 1 vs Player 2 / Computer)
+- Winning cells highlighted
+- Restart button to begin a new round
+
+---
+
+### 04 · To-Do Web App
+
+A minimal, elegant task manager with persistent storage.
+
+**Features**
+- Time-aware greeting (Good Morning / Afternoon / Evening)
+- Add tasks with a single input
+- Inline edit on double-click
+- Mark tasks complete with animated checkbox
+- Completed tasks separated into their own section
+- Data persisted in `localStorage` — survives page refresh
+- Fully responsive
+
+---
+
+## Tech Stack
+
+| Layer      | Technology                        |
+|------------|-----------------------------------|
+| Markup     | HTML5 (semantic)                  |
+| Styling    | CSS3 (custom properties, grid, flexbox, animations) |
+| Logic      | Vanilla JavaScript (ES2020+)      |
+| Fonts      | Google Fonts — Inter              |
+| Storage    | localStorage (To-Do App)          |
+| Server     | Node.js `http-server` / Python    |
+
+---
+
+## Running Locally
+
+**Option 1 — Node.js (recommended)**
+
+```sh
+npx http-server -p 8000 -c-1
 ```
 
-## Task Details
-
-### Responsive Landing Page
-
-A portfolio-inspired landing page based on Lekhan H R's personal site style. It uses a fixed navigation menu, scroll-based header styling, hover states, and responsive portfolio sections.
-
-### Stopwatch Web Application
-
-A stopwatch app styled from the provided timer UI reference image. It includes start, pause, reset, and lap recording features.
-
-### Tic Tac Toe Web Application
-
-An interactive tic-tac-toe game styled from the provided game UI reference image. It supports two-player mode and play-against-computer mode.
-
-### To-Do Web App
-
-A task manager styled from the provided to-do UI reference image. It allows users to add, organize, complete, edit, delete, and schedule tasks.
-
-## How To Run
-
-Start a local server from the project root:
+**Option 2 — Python**
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Open any task in the browser:
+Then open any project in your browser:
 
-```text
-http://127.0.0.1:8000/Responsive_Landing_Page/
-http://127.0.0.1:8000/Stopwatch_Web_Application/
-http://127.0.0.1:8000/Tic_Tac_Toe_Web_Application/
-http://127.0.0.1:8000/To_Do_Web_App/
+| Project | URL |
+|---------|-----|
+| Landing Page | http://localhost:8000/Responsive_Landing_Page/ |
+| Stopwatch | http://localhost:8000/Stopwatch_Web_Application/ |
+| Tic Tac Toe | http://localhost:8000/Tic_Tac_Toe_Web_Application/ |
+| To-Do App | http://localhost:8000/To_Do_Web_App/ |
+
+---
+
+## Project Structure
+
 ```
+skillcraft_intern_tasks/
+├── Responsive_Landing_Page/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── Stopwatch_Web_Application/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── Tic_Tac_Toe_Web_Application/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── To_Do_Web_App/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+└── README.md
+```
+
+---
+
+## Author
+
+**Lekhan H R**  
+Full-Stack Developer & AI Enthusiast · Bangalore  
+[GitHub](https://github.com/lekhanpro) · [LinkedIn](https://linkedin.com/in/lekhan-h-r) · [Portfolio](https://www.lekhanhr.online/)
+
+---
+
+*Built for SkillCraft Technology Web Development Internship — 2025*
