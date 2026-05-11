@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap");
+
 * { box-sizing: border-box; }
 body {
   min-height: 100vh;
@@ -5,11 +7,11 @@ body {
   display: grid;
   place-items: center;
   padding: 22px;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #111827;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  color: #1a1a19;
   background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 32%),
-    #eef2f7;
+    linear-gradient(rgba(248, 248, 247, 0.88), rgba(248, 248, 247, 0.88)),
+    url("../63301ae764369e187405fe318f265605.jpg") center/cover fixed;
 }
 .watch {
   width: min(980px, 100%);
@@ -20,29 +22,31 @@ body {
 .panel,
 .laps-panel {
   border: 1px solid #d9e2ec;
-  border-radius: 8px;
+  border-radius: 28px;
   background: #fff;
-  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.10);
+  box-shadow: 0 24px 54px rgba(91, 76, 240, 0.16);
 }
 .panel {
   padding: clamp(24px, 5vw, 44px);
 }
 .eyebrow {
   margin: 0 0 8px;
-  color: #0f766e;
+  color: #5b4cf0;
   font-weight: 900;
 }
 h1 {
   margin: 0 0 34px;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(2rem, 6vw, 4.5rem);
   line-height: 1;
 }
 .time {
   margin-bottom: 28px;
   padding: 26px 16px;
-  border-radius: 8px;
-  color: #fff;
-  background: #111827;
+  border-radius: 28px;
+  color: #1a1a19;
+  background: #f8f8f7;
+  box-shadow: inset 0 0 0 1px #fff, 0 18px 40px rgba(91, 76, 240, 0.16);
   font-size: clamp(2.2rem, 9vw, 5rem);
   font-weight: 900;
   font-variant-numeric: tabular-nums;
@@ -56,7 +60,7 @@ h1 {
 button {
   min-height: 48px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   color: #fff;
   font-weight: 900;
   cursor: pointer;
@@ -65,10 +69,10 @@ button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
-.start { background: #0f766e; }
+.start { background: #5b4cf0; }
 .pause { background: #d97706; }
 .reset { background: #dc2626; }
-.lap { background: #334155; }
+.lap { background: #1a1a19; }
 .laps-panel {
   padding: 26px;
 }
@@ -88,7 +92,7 @@ li {
   gap: 12px;
   padding: 12px;
   border: 1px solid #d9e2ec;
-  border-radius: 6px;
+  border-radius: 14px;
   font-variant-numeric: tabular-nums;
 }
 .empty { color: #64748b; }

@@ -5,6 +5,12 @@ Responsive HTML, CSS, and JavaScript implementations completed for the SkillCraf
 ## Project Structure
 
 ```text
+README.md
+1486020891cfaadebcff76a0f44445de.jpg
+63301ae764369e187405fe318f265605.jpg
+6acf64c9c932457e1f4a7e3cd0307cee.jpg
+9a306482b44b2988f17caa2c64b9f47b.jpg
+
 Responsive_Landing_Page/
   index.html
   style.css
@@ -30,19 +36,19 @@ To_Do_Web_App/
 
 ### Responsive Landing Page
 
-An interactive responsive landing page with a fixed navigation menu. The navigation bar changes style after scrolling and menu items respond on hover.
+A portfolio-inspired landing page based on Lekhan H R's personal site style. It uses a fixed navigation menu, scroll-based header styling, hover states, and responsive portfolio sections.
 
 ### Stopwatch Web Application
 
-A stopwatch app with start, pause, reset, and lap recording features. Lap records are displayed dynamically while the stopwatch runs.
+A stopwatch app styled from the provided timer UI reference image. It includes start, pause, reset, and lap recording features.
 
 ### Tic Tac Toe Web Application
 
-An interactive tic-tac-toe game that supports two-player mode and play-against-computer mode. It tracks the game state and detects wins or draws.
+An interactive tic-tac-toe game styled from the provided game UI reference image. It supports two-player mode and play-against-computer mode.
 
 ### To-Do Web App
 
-A task manager that allows users to add, organize, complete, edit, delete, and schedule tasks with date and time support.
+A task manager styled from the provided to-do UI reference image. It allows users to add, organize, complete, edit, delete, and schedule tasks.
 
 ## How To Run
 
