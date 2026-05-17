@@ -1,12 +1,15 @@
-const boardEl       = document.getElementById('board');
-const turnIndicator = document.getElementById('turnIndicator');
-const scoreXEl      = document.getElementById('scoreX');
-const scoreOEl      = document.getElementById('scoreO');
-const newGameBtn    = document.getElementById('newGame');
-const p1col         = document.getElementById('p1col');
-const p2col         = document.getElementById('p2col');
-const p2label       = document.getElementById('p2label');
-const modeBtns      = document.querySelectorAll('.mode-btn');
+const boardEl      = document.getElementById('board');
+const statusPill   = document.getElementById('statusPill');
+const statusText   = document.getElementById('statusText');
+const scoreXEl     = document.getElementById('scoreX');
+const scoreOEl     = document.getElementById('scoreO');
+const scoreDrawsEl = document.getElementById('scoreDraws');
+const newGameBtn   = document.getElementById('newGameBtn');
+const resetScoreBtn = document.getElementById('resetScoreBtn');
+const p1card       = document.getElementById('p1card');
+const p2card       = document.getElementById('p2card');
+const p2label      = document.getElementById('p2label');
+const modeBtns     = document.querySelectorAll('.mode-btn');
 
 const LINES = [
   [0,1,2],[3,4,5],[6,7,8],
@@ -17,36 +20,34 @@ const LINES = [
 let board    = Array(9).fill('');
 let current  = 'X';
 let finished = false;
-let mode     = 'computer'; // 'computer' | 'human'
-let score    = { X: 0, O: 0 };
+let mode     = 'ai';
+let score    = { X: 0, O: 0, D: 0 };
 
 // ── Mode toggle ──
 modeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     mode = btn.dataset.mode;
     modeBtns.forEach(b => b.classList.toggle('mode-btn--active', b === btn));
-    p2label.textContent = mode === 'computer' ? 'COMPUTER' : 'PLAYER 2';
+    p2label.textContent = mode === 'ai' ? 'Computer' : 'Player 2';
     reset();
   });
 });
 
-// ── Win detection ──
+// ── Win check ──
 function getResult(state) {
-  for (const line of LINES) {
-    const [a, b, c] = line;
-    if (state[a] && state[a] === state[b] && state[a] === state[c]) {
-      return { mark: state[a], line };
-    }
+  for (const [a,b,c] of LINES) {
+    if (state[a] && state[a] === state[b] && state[a] === state[c])
+      return { mark: state[a], line: [a,b,c] };
   }
   return state.every(Boolean) ? { mark: 'D', line: [] } : null;
 }
 
-// ── Minimax AI ──
-function minimax(state, isMax) {
-  const result = getResult(state);
-  if (result) {
-    if (result.mark === 'O') return 10;
-    if (result.mark === 'X') return -10;
+// ── Minimax ──
+function minimax(state, isMax, depth = 0) {
+  const r = getResult(state);
+  if (r) {
+    if (r.mark === 'O') return 10 - depth;
+    if (r.mark === 'X') return depth - 10;
     return 0;
   }
   const scores = [];
@@ -54,7 +55,7 @@ function minimax(state, isMax) {
     if (!cell) {
       const copy = [...state];
       copy[i] = isMax ? 'O' : 'X';
-      scores.push(minimax(copy, !isMax));
+      scores.push(minimax(copy, !isMax, depth + 1));
     }
   });
   return isMax ? Math.max(...scores) : Math.min(...scores);
@@ -66,23 +67,36 @@ function bestMove() {
     if (!cell) {
       const copy = [...board];
       copy[i] = 'O';
-      const score = minimax(copy, false);
-      if (score > best) { best = score; move = i; }
+      const s = minimax(copy, false);
+      if (s > best) { best = s; move = i; }
     }
   });
   return move;
 }
 
-// ── Turn UI ──
-function updateTurnUI() {
-  const cls    = current === 'X' ? 'x-mark' : 'o-mark';
-  const symbol = current === 'X' ? '✕' : '○';
-  turnIndicator.innerHTML = `It's <span class="turn-mark ${cls}">${symbol}</span> turn`;
-  p1col.classList.toggle('active', current === 'X');
-  p2col.classList.toggle('active', current === 'O');
+// ── UI helpers ──
+function updateStatus(result) {
+  statusPill.className = 'status-pill glass';
+  if (!result) {
+    const sym = current === 'X' ? '✕' : '○';
+    const who = current === 'X' ? 'Player 1' : (mode === 'ai' ? 'Computer' : 'Player 2');
+    statusText.textContent = `${who}'s turn  ${sym}`;
+  } else if (result.mark === 'D') {
+    statusText.textContent = "It's a draw! 🤝";
+    statusPill.classList.add('draw');
+  } else {
+    const who = result.mark === 'X' ? 'Player 1' : (mode === 'ai' ? 'Computer' : 'Player 2');
+    statusText.textContent = `${who} wins! 🎉`;
+    statusPill.classList.add(result.mark === 'X' ? 'win-x' : 'win-o');
+  }
 }
 
-// ── Render board ──
+function updateScoreHighlight() {
+  p1card.classList.toggle('active', current === 'X' && !finished);
+  p2card.classList.toggle('active', current === 'O' && !finished);
+}
+
+// ── Render ──
 function render() {
   const result = getResult(board);
   boardEl.innerHTML = '';
@@ -100,39 +114,36 @@ function render() {
     boardEl.appendChild(cell);
   });
 
-  scoreXEl.textContent = score.X;
-  scoreOEl.textContent = score.O;
+  scoreXEl.textContent     = score.X;
+  scoreOEl.textContent     = score.O;
+  scoreDrawsEl.textContent = score.D;
+  updateStatus(result);
+  updateScoreHighlight();
 }
 
-// ── Play a move ──
-function play(index) {
-  if (finished || board[index]) return;
-  board[index] = current;
+// ── Play ──
+function play(i) {
+  if (finished || board[i]) return;
+  board[i] = current;
 
   const result = getResult(board);
   if (result) {
     finished = true;
     if (result.mark !== 'D') score[result.mark]++;
-    const who = result.mark === 'X'
-      ? 'Player 1 wins!'
-      : (mode === 'computer' ? 'Computer wins!' : 'Player 2 wins!');
-    turnIndicator.innerHTML = `<span class="win-message">${result.mark === 'D' ? "It's a draw!" : who}</span>`;
-    p1col.classList.remove('active');
-    p2col.classList.remove('active');
+    else score.D++;
+    p1card.classList.remove('active');
+    p2card.classList.remove('active');
     render();
     return;
   }
 
   current = current === 'X' ? 'O' : 'X';
-  updateTurnUI();
   render();
 
-  // Computer plays O
-  if (!finished && mode === 'computer' && current === 'O') {
+  if (!finished && mode === 'ai' && current === 'O') {
+    // Disable board while AI thinks
     boardEl.querySelectorAll('.cell').forEach(c => c.disabled = true);
-    setTimeout(() => {
-      play(bestMove());
-    }, 350);
+    setTimeout(() => { if (!finished) play(bestMove()); }, 400);
   }
 }
 
@@ -141,9 +152,13 @@ function reset() {
   board    = Array(9).fill('');
   current  = 'X';
   finished = false;
-  updateTurnUI();
   render();
 }
 
 newGameBtn.addEventListener('click', reset);
+resetScoreBtn.addEventListener('click', () => {
+  score = { X: 0, O: 0, D: 0 };
+  reset();
+});
+
 reset();

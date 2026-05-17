@@ -1,53 +1,81 @@
-const timeMainEl = document.querySelector('.time-main');
-const timeMsEl = document.querySelector('.time-ms');
-const startBtn = document.getElementById('start');
-const resetBtn = document.getElementById('reset');
-const lapBtn = document.getElementById('lap');
-const lapsEl = document.getElementById('laps');
-const emptyEl = document.getElementById('empty');
-const lapCountEl = document.getElementById('lapCount');
+// Inject SVG gradient
+document.body.insertAdjacentHTML('afterbegin', `
+  <svg class="ring-defs" aria-hidden="true">
+    <defs>
+      <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#7c4dff"/>
+        <stop offset="100%" stop-color="#00bcd4"/>
+      </linearGradient>
+    </defs>
+  </svg>
+`);
 
-let startAt = 0;
-let saved = 0;
-let frame = null;
-let lapNumber = 0;
+const timeHM    = document.getElementById('timeHM');
+const timeS     = document.getElementById('timeS');
+const timeMS    = document.getElementById('timeMS');
+const timeStatus = document.getElementById('timeStatus');
+const startBtn  = document.getElementById('startBtn');
+const resetBtn  = document.getElementById('resetBtn');
+const lapBtn    = document.getElementById('lapBtn');
+const lapsList  = document.getElementById('lapsList');
+const lapsEmpty = document.getElementById('lapsEmpty');
+const lapChip   = document.getElementById('lapChip');
+const ringFill  = document.getElementById('ringFill');
+const playIcon  = startBtn.querySelector('.fab-icon--play');
+const pauseIcon = startBtn.querySelector('.fab-icon--pause');
+
+const CIRCUMFERENCE = 2 * Math.PI * 100; // r=100
+
+let startAt  = 0;
+let saved    = 0;
+let frame    = null;
+let running  = false;
+let lapCount = 0;
 let lapTimes = [];
-let running = false;
 
 function pad(n, len = 2) { return String(n).padStart(len, '0'); }
 
-function format(ms) {
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  const s = Math.floor((ms % 60000) / 1000);
+function formatTime(ms) {
+  const h  = Math.floor(ms / 3600000);
+  const m  = Math.floor((ms % 3600000) / 60000);
+  const s  = Math.floor((ms % 60000) / 1000);
   const cs = Math.floor((ms % 1000) / 10);
-  return {
-    main: `${pad(h)}:${pad(m)}:${pad(s)}`,
-    ms: `.${pad(cs)}`
-  };
+  return { hm: `${pad(h)}:${pad(m)}`, s: pad(s), ms: `.${pad(cs)}` };
+}
+
+function formatFull(ms) {
+  const { hm, s, ms: mss } = formatTime(ms);
+  return `${hm}:${s}${mss}`;
 }
 
 function currentMs() {
   return running ? saved + Date.now() - startAt : saved;
 }
 
+function updateRing(ms) {
+  // One full rotation = 60 seconds
+  const progress = (ms % 60000) / 60000;
+  const offset = CIRCUMFERENCE * (1 - progress);
+  ringFill.style.strokeDashoffset = offset;
+}
+
 function tick() {
-  const { main, ms } = format(currentMs());
-  timeMainEl.textContent = main;
-  timeMsEl.textContent = ms;
+  const ms = currentMs();
+  const { hm, s, ms: mss } = formatTime(ms);
+  timeHM.textContent = hm;
+  timeS.textContent  = s;
+  timeMS.textContent = mss;
+  updateRing(ms);
   frame = requestAnimationFrame(tick);
 }
 
-function updateButtons() {
-  lapBtn.disabled = !running;
-  resetBtn.disabled = running || (saved === 0 && lapNumber === 0);
-  if (running) {
-    startBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause`;
-    startBtn.classList.add('paused');
-  } else {
-    startBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> ${saved > 0 ? 'Resume' : 'Start'}`;
-    startBtn.classList.remove('paused');
-  }
+function setUI() {
+  playIcon.style.display  = running ? 'none' : 'block';
+  pauseIcon.style.display = running ? 'block' : 'none';
+  startBtn.classList.toggle('running', running);
+  lapBtn.disabled   = !running;
+  resetBtn.disabled = running || (saved === 0 && lapCount === 0);
+  timeStatus.textContent = running ? 'Running' : saved > 0 ? 'Paused' : 'Ready';
 }
 
 startBtn.addEventListener('click', () => {
@@ -60,53 +88,52 @@ startBtn.addEventListener('click', () => {
     cancelAnimationFrame(frame);
     frame = null;
     running = false;
-    const { main, ms } = format(saved);
-    timeMainEl.textContent = main;
-    timeMsEl.textContent = ms;
+    const { hm, s, ms } = formatTime(saved);
+    timeHM.textContent = hm;
+    timeS.textContent  = s;
+    timeMS.textContent = ms;
   }
-  updateButtons();
+  setUI();
 });
 
 resetBtn.addEventListener('click', () => {
-  if (frame) cancelAnimationFrame(frame);
+  cancelAnimationFrame(frame);
   frame = null;
   running = false;
   saved = 0;
-  lapNumber = 0;
+  lapCount = 0;
   lapTimes = [];
-  timeMainEl.textContent = '00:00:00';
-  timeMsEl.textContent = '.00';
-  lapsEl.innerHTML = '';
-  emptyEl.hidden = false;
-  lapCountEl.hidden = true;
-  updateButtons();
+  timeHM.textContent = '00:00';
+  timeS.textContent  = '00';
+  timeMS.textContent = '.00';
+  updateRing(0);
+  lapsList.innerHTML = '';
+  lapsEmpty.hidden   = false;
+  lapChip.hidden     = true;
+  setUI();
 });
 
 lapBtn.addEventListener('click', () => {
-  const now = currentMs();
-  lapNumber += 1;
-  const prev = lapTimes.length > 0 ? lapTimes[lapTimes.length - 1] : 0;
+  const now  = currentMs();
+  lapCount  += 1;
+  const prev = lapTimes.length ? lapTimes[lapTimes.length - 1] : 0;
   const diff = now - prev;
   lapTimes.push(now);
 
-  emptyEl.hidden = true;
-  lapCountEl.hidden = false;
-  lapCountEl.textContent = `${lapNumber} Lap${lapNumber !== 1 ? 's' : ''}`;
+  lapsEmpty.hidden = true;
+  lapChip.hidden   = false;
+  lapChip.textContent = `${lapCount} lap${lapCount !== 1 ? 's' : ''}`;
 
-  const item = document.createElement('div');
-  item.className = 'lap-item';
-
-  const { main: lapMain, ms: lapMs } = format(now);
-  const { main: diffMain, ms: diffMs } = format(diff);
-
-  item.innerHTML = `
-    <span class="lap-name">Lap ${lapNumber}</span>
-    <div class="lap-times">
-      <div class="lap-time">${lapMain}${lapMs}</div>
-      ${lapNumber > 1 ? `<div class="lap-diff">+${diffMain}${diffMs}</div>` : '<div class="lap-diff">--</div>'}
+  const row = document.createElement('div');
+  row.className = 'lap-row';
+  row.innerHTML = `
+    <span class="lap-row__name">Lap ${lapCount}</span>
+    <div class="lap-row__right">
+      <div class="lap-row__time">${formatFull(now)}</div>
+      <div class="lap-row__diff">${lapCount > 1 ? '+' + formatFull(diff) : '—'}</div>
     </div>
   `;
-  lapsEl.prepend(item);
+  lapsList.prepend(row);
 });
 
-updateButtons();
+setUI();

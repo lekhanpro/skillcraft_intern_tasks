@@ -6,51 +6,72 @@
   <title>Tasks</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- NAV -->
-  <nav class="nav">
-    <a class="nav__brand" href="#">Tasks</a>
-    <div class="nav__icons">
-      <button class="icon-btn" aria-label="Settings">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-      <button class="icon-btn" aria-label="Profile">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
-    </div>
-  </nav>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+  </div>
 
-  <!-- MAIN -->
-  <main class="main">
-    <!-- Greeting -->
-    <div class="greeting">
-      <h1 id="greetingText">Good Morning</h1>
-      <p id="greetingSub">You have <span id="taskCountText">0 tasks</span> to complete today.</p>
-    </div>
+  <div class="app">
+    <!-- Header -->
+    <header class="app-header glass">
+      <div class="app-header__left">
+        <h1 class="app-header__greeting" id="greeting">Good Morning</h1>
+        <p class="app-header__sub" id="subtext">You have 0 tasks today</p>
+      </div>
+      <div class="app-header__icon">✅</div>
+    </header>
 
-    <!-- Add task form -->
-    <div class="add-card">
-      <form id="taskForm" class="add-form">
-        <input id="taskTitle" type="text" class="add-input" placeholder="What needs to be done?" autocomplete="off">
-        <button type="submit" class="add-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Task
-        </button>
-      </form>
+    <!-- Filter chips -->
+    <div class="filter-row" role="tablist" aria-label="Filter tasks">
+      <button class="chip chip--active" data-filter="all" role="tab" aria-selected="true">All</button>
+      <button class="chip" data-filter="active" role="tab" aria-selected="false">Active</button>
+      <button class="chip" data-filter="completed" role="tab" aria-selected="false">Done</button>
     </div>
 
     <!-- Task list -->
     <div class="task-list" id="taskList"></div>
+    <p class="empty-state" id="emptyState">No tasks here. Add one below!</p>
 
-    <!-- Completed divider + list -->
-    <div id="completedSection" hidden>
-      <div class="divider-label">COMPLETED</div>
-      <div class="task-list" id="completedList"></div>
+    <!-- FAB add button -->
+    <button class="add-fab" id="addFab" aria-label="Add task">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>Add Task</span>
+    </button>
+  </div>
+
+  <!-- Add / Edit bottom sheet -->
+  <div class="sheet-backdrop" id="backdrop"></div>
+  <div class="bottom-sheet glass" id="bottomSheet" aria-modal="true" role="dialog" aria-label="Add task">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title" id="sheetTitle">New Task</h2>
+    <div class="sheet-body">
+      <div class="field">
+        <label class="field__label" for="taskInput">Task name</label>
+        <input class="field__input" type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field__label" for="taskNote">Note (optional)</label>
+        <input class="field__input" type="text" id="taskNote" placeholder="Add a note...">
+      </div>
+      <div class="field">
+        <label class="field__label">Priority</label>
+        <div class="priority-row">
+          <button class="priority-btn" data-p="low">Low</button>
+          <button class="priority-btn priority-btn--active" data-p="medium">Medium</button>
+          <button class="priority-btn" data-p="high">High</button>
+        </div>
+      </div>
     </div>
-  </main>
+    <div class="sheet-actions">
+      <button class="sheet-btn sheet-btn--cancel" id="cancelBtn">Cancel</button>
+      <button class="sheet-btn sheet-btn--save" id="saveBtn">Add Task</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

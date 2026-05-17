@@ -1,146 +1,181 @@
-const form = document.getElementById('taskForm');
-const titleInput = document.getElementById('taskTitle');
-const taskListEl = document.getElementById('taskList');
-const completedListEl = document.getElementById('completedList');
-const completedSection = document.getElementById('completedSection');
-const greetingText = document.getElementById('greetingText');
-const greetingSub = document.getElementById('greetingSub');
-const taskCountText = document.getElementById('taskCountText');
+// ── State ──
+let tasks      = JSON.parse(localStorage.getItem('m3_tasks') || '[]');
+let filter     = 'all';
+let editingId  = null;
+let priority   = 'medium';
 
-let tasks = JSON.parse(localStorage.getItem('lumina_tasks') || '[]');
+// ── Elements ──
+const greeting    = document.getElementById('greeting');
+const subtext     = document.getElementById('subtext');
+const taskList    = document.getElementById('taskList');
+const emptyState  = document.getElementById('emptyState');
+const addFab      = document.getElementById('addFab');
+const backdrop    = document.getElementById('backdrop');
+const bottomSheet = document.getElementById('bottomSheet');
+const sheetTitle  = document.getElementById('sheetTitle');
+const taskInput   = document.getElementById('taskInput');
+const taskNote    = document.getElementById('taskNote');
+const saveBtn     = document.getElementById('saveBtn');
+const cancelBtn   = document.getElementById('cancelBtn');
+const chips       = document.querySelectorAll('.chip');
+const priorityBtns = document.querySelectorAll('.priority-btn');
 
-function save() {
-  localStorage.setItem('lumina_tasks', JSON.stringify(tasks));
-}
-
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good Morning';
-  if (h < 17) return 'Good Afternoon';
-  return 'Good Evening';
-}
-
+// ── Greeting ──
 function updateGreeting() {
-  greetingText.textContent = getGreeting();
+  const h = new Date().getHours();
+  greeting.textContent = h < 12 ? 'Good Morning 🌅' : h < 17 ? 'Good Afternoon ☀️' : 'Good Evening 🌙';
   const active = tasks.filter(t => !t.done).length;
-  taskCountText.textContent = `${active} task${active !== 1 ? 's' : ''}`;
+  subtext.textContent = active === 0
+    ? 'All caught up! 🎉'
+    : `You have ${active} task${active !== 1 ? 's' : ''} remaining`;
 }
 
-function createCheckbox(done) {
-  const box = document.createElement('div');
-  box.className = 'task-checkbox' + (done ? ' checked' : '');
-  box.setAttribute('role', 'checkbox');
-  box.setAttribute('aria-checked', done ? 'true' : 'false');
-  box.setAttribute('tabindex', '0');
-  return box;
+// ── Save ──
+function save() {
+  localStorage.setItem('m3_tasks', JSON.stringify(tasks));
 }
 
-function renderTask(task, container) {
-  const item = document.createElement('div');
-  item.className = 'task-item';
-  item.dataset.id = task.id;
-
-  const checkbox = createCheckbox(task.done);
-
-  const textEl = document.createElement('span');
-  textEl.className = 'task-text' + (task.done ? ' done' : '');
-  textEl.textContent = task.title;
-
-  // Toggle done
-  const toggleDone = () => {
-    task.done = !task.done;
-    save();
-    render();
-  };
-  checkbox.addEventListener('click', toggleDone);
-  checkbox.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleDone(); } });
-
-  // Actions
-  const actions = document.createElement('div');
-  actions.className = 'task-actions';
-
-  // Edit button
-  const editBtn = document.createElement('button');
-  editBtn.className = 'task-action-btn edit';
-  editBtn.setAttribute('aria-label', 'Edit task');
-  editBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
-  editBtn.addEventListener('click', () => startEdit(task, item, textEl));
-
-  // Delete button
-  const delBtn = document.createElement('button');
-  delBtn.className = 'task-action-btn delete';
-  delBtn.setAttribute('aria-label', 'Delete task');
-  delBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
-  delBtn.addEventListener('click', () => {
-    tasks = tasks.filter(t => t.id !== task.id);
-    save();
-    render();
-  });
-
-  actions.appendChild(editBtn);
-  actions.appendChild(delBtn);
-
-  item.appendChild(checkbox);
-  item.appendChild(textEl);
-  if (!task.done && task.priority) {
-    const badge = document.createElement('span');
-    badge.className = 'task-priority';
-    badge.textContent = task.priority;
-    item.appendChild(badge);
-  }
-  item.appendChild(actions);
-  container.appendChild(item);
-}
-
-function startEdit(task, item, textEl) {
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'task-edit-input';
-  input.value = task.title;
-  item.replaceChild(input, textEl);
-  input.focus();
-
-  const finish = () => {
-    const val = input.value.trim();
-    if (val) task.title = val;
-    save();
-    render();
-  };
-
-  input.addEventListener('blur', finish);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); finish(); }
-    if (e.key === 'Escape') render();
-  });
-}
-
+// ── Render ──
 function render() {
-  taskListEl.innerHTML = '';
-  completedListEl.innerHTML = '';
-
-  const active = tasks.filter(t => !t.done);
-  const done = tasks.filter(t => t.done);
-
-  active.forEach(t => renderTask(t, taskListEl));
-  done.forEach(t => renderTask(t, completedListEl));
-
-  completedSection.hidden = done.length === 0;
   updateGreeting();
+  taskList.innerHTML = '';
+
+  const visible = tasks.filter(t => {
+    if (filter === 'active')    return !t.done;
+    if (filter === 'completed') return t.done;
+    return true;
+  });
+
+  emptyState.hidden = visible.length > 0;
+
+  visible.forEach(task => {
+    const card = document.createElement('div');
+    card.className = 'task-card' + (task.done ? ' done' : '');
+    card.dataset.id = task.id;
+
+    card.innerHTML = `
+      <div class="task-check ${task.done ? 'checked' : ''}" role="checkbox" aria-checked="${task.done}" tabindex="0"></div>
+      <div class="task-content">
+        <div class="task-title ${task.done ? 'done' : ''}">${escHtml(task.title)}</div>
+        ${task.note ? `<div class="task-note">${escHtml(task.note)}</div>` : ''}
+        <div class="task-meta">
+          <div class="priority-dot priority-dot--${task.priority}"></div>
+          <span class="priority-label">${task.priority}</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="task-action task-action--edit" aria-label="Edit task">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="task-action task-action--delete" aria-label="Delete task">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </button>
+      </div>
+    `;
+
+    // Toggle done
+    const check = card.querySelector('.task-check');
+    const toggle = () => {
+      task.done = !task.done;
+      save();
+      render();
+    };
+    check.addEventListener('click', toggle);
+    check.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); } });
+
+    // Edit
+    card.querySelector('.task-action--edit').addEventListener('click', e => {
+      e.stopPropagation();
+      openSheet(task);
+    });
+
+    // Delete
+    card.querySelector('.task-action--delete').addEventListener('click', e => {
+      e.stopPropagation();
+      card.style.transform = 'scale(0.95)';
+      card.style.opacity = '0';
+      card.style.transition = 'all 0.2s';
+      setTimeout(() => {
+        tasks = tasks.filter(t => t.id !== task.id);
+        save();
+        render();
+      }, 200);
+    });
+
+    taskList.appendChild(card);
+  });
 }
 
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const title = titleInput.value.trim();
-  if (!title) return;
-  tasks.push({
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-    title,
-    done: false,
-    priority: null
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Sheet ──
+function openSheet(task = null) {
+  editingId = task ? task.id : null;
+  sheetTitle.textContent = task ? 'Edit Task' : 'New Task';
+  saveBtn.textContent    = task ? 'Save Changes' : 'Add Task';
+  taskInput.value = task ? task.title : '';
+  taskNote.value  = task ? (task.note || '') : '';
+  setPriority(task ? task.priority : 'medium');
+  backdrop.classList.add('open');
+  bottomSheet.classList.add('open');
+  setTimeout(() => taskInput.focus(), 350);
+}
+
+function closeSheet() {
+  backdrop.classList.remove('open');
+  bottomSheet.classList.remove('open');
+  editingId = null;
+}
+
+function setPriority(p) {
+  priority = p;
+  priorityBtns.forEach(btn => {
+    btn.classList.toggle('priority-btn--active', btn.dataset.p === p);
   });
-  titleInput.value = '';
+}
+
+priorityBtns.forEach(btn => btn.addEventListener('click', () => setPriority(btn.dataset.p)));
+addFab.addEventListener('click', () => openSheet());
+cancelBtn.addEventListener('click', closeSheet);
+backdrop.addEventListener('click', closeSheet);
+
+saveBtn.addEventListener('click', () => {
+  const title = taskInput.value.trim();
+  if (!title) { taskInput.focus(); return; }
+
+  if (editingId) {
+    const t = tasks.find(t => t.id === editingId);
+    if (t) { t.title = title; t.note = taskNote.value.trim(); t.priority = priority; }
+  } else {
+    tasks.unshift({
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      title,
+      note: taskNote.value.trim(),
+      priority,
+      done: false,
+      createdAt: Date.now()
+    });
+  }
   save();
+  closeSheet();
   render();
+});
+
+// Enter to save
+taskInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn.click(); });
+
+// ── Filter chips ──
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    filter = chip.dataset.filter;
+    chips.forEach(c => {
+      c.classList.toggle('chip--active', c === chip);
+      c.setAttribute('aria-selected', c === chip);
+    });
+    render();
+  });
 });
 
 render();
